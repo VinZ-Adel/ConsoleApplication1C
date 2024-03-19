@@ -3,39 +3,65 @@
 #include <windows.h>
 #include <stdbool.h>
 
+
+
 int main()
 {
+	
 
+	// additional information
+	STARTUPINFO si;
+	PROCESS_INFORMATION pi;
+	HANDLE mainHANDLE;
+	DWORD menuPid = GetCurrentProcessId();
 
+	
+
+	// set the size of the structures
+	ZeroMemory(&si, sizeof(si));
+	si.cb = sizeof(si);
+	ZeroMemory(&pi, sizeof(pi));
+
+	// start the program up
+	CreateProcess("C:\\Users\\Vinnie\\source\\repos\\Blackout\\Blackout\\bin\\Release\\net6.0 - windows\\Blackout.exe",   // the path
+		NULL,        // Command line
+		NULL,           // Process handle not inheritable
+		NULL,           // Thread handle not inheritable
+		FALSE,          // Set handle inheritance to FALSE
+		0,              // No creation flags
+		NULL,           // Use parent's environment block
+		NULL,           // Use parent's starting directory 
+		&si,            // Pointer to STARTUPINFO structure
+		&pi             // Pointer to PROCESS_INFORMATION structure (removed extra parentheses)
+	);
+	mainHANDLE = pi.hProcess;
+	// Close process and thread handles. 
+	CloseHandle(pi.hProcess);
+	CloseHandle(pi.hThread);
 	while (true)
 	{
-		// additional information
-		STARTUPINFO si;
-		PROCESS_INFORMATION pi;
-
-		// set the size of the structures
-		ZeroMemory(&si, sizeof(si));
-		si.cb = sizeof(si);
-		ZeroMemory(&pi, sizeof(pi));
-
-		// start the program up
-		CreateProcess(lpApplicationName,   // the path
-			NULL,        // Command line
-			NULL,           // Process handle not inheritable
-			NULL,           // Thread handle not inheritable
-			FALSE,          // Set handle inheritance to FALSE
-			0,              // No creation flags
-			NULL,           // Use parent's environment block
-			NULL,           // Use parent's starting directory 
-			&si,            // Pointer to STARTUPINFO structure
-			&pi             // Pointer to PROCESS_INFORMATION structure (removed extra parentheses)
-		);
-		// Close process and thread handles. 
-		CloseHandle(pi.hProcess);
-		CloseHandle(pi.hThread);
+		LPDWORD lpExitCode;
+		GetExitCodeProcess(mainHANDLE, lpExitCode);
+		if (lpExitCode != STILL_ACTIVE)
+			lghlhjhgl
 		sleep(1000);
 	}
 }
+
+HWND g_HWND = NULL;
+
+BOOL CALLBACK EnumWindowsProcMy(HWND hwnd, LPARAM lParam)
+{
+	DWORD lpdwProcessId;
+	GetWindowThreadProcessId(hwnd, &lpdwProcessId);
+	if (lpdwProcessId == lParam)
+	{
+		g_HWND = hwnd;
+		return FALSE;
+	}
+	return TRUE;
+}
+
 
 static void ForceToForeground(HWND window)
 {
